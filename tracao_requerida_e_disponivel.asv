@@ -1,0 +1,48 @@
+clear
+clc
+close all
+
+%% Dados
+
+mtow = 32500;   %Kg
+g = 9.81;       %m/s²
+area = 76.90;
+densidadeAr = 1.225; %Kg/m³
+load("curva_tracao");
+A = readmatrix("pontos_polar_arrasto.xlsx");
+
+alpha = A(:,1)';
+Cl = A(:,3)';
+Cd = A(:,6)';
+
+%% Calculos
+
+polinomioPolarDeArrasto = polyfit(Cl,Cd,5);
+
+velocidades = curvaTracao.velocidades;
+tracaoDisponivel = curvaTracao.tracao;
+ClRequerido = mtow.*g./(1/2.*velocidades.^2.*area.*densidadeAr);
+
+%% Plots
+
+%Cl x alpha
+plot(alpha, Cl)
+grid minor
+xlabel("alpha [°]")
+ylabel("Cl")
+
+%Cd x alpha
+figure
+plot(alpha, Cd)
+grid minor
+xlabel("alpha [°]")
+ylabel("Cd")
+
+%Cd x Cl
+figure
+plot(Cl,Cd)
+hold on
+plot(Cl, polyval(polinomioPolarDeArrasto,linspace(0.037045,1.68,length(Cl))))
+grid minor
+xlabel("Cl")
+ylabel("Cd")
